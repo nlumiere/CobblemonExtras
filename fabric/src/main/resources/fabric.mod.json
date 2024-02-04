@@ -19,7 +19,8 @@
     ],
     "client": []
   },
-  "mixins": [],
+  "mixins": [
+  ],
   "depends": {
     "fabricloader": ">=0.14.21",
     "fabric": ">=0.89.0",
