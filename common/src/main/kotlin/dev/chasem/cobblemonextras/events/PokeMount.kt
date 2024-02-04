@@ -40,7 +40,6 @@ class PokeMount {
                 }
             }
 
-            player.sendMessage(Text.literal("Riding"))
             player.startRiding(pokemonEntity)
 
             return ActionResult.PASS

@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {"item": "minecraft:music_disc_mall"},
+    {"item": "cobblemon:upgrade"}
+  ],
+  "result": {
+    "item": "cobblemonextras:checkspawn",
+    "count": 1
+  }
+}
