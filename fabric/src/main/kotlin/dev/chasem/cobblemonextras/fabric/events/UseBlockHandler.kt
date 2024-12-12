@@ -1,6 +1,7 @@
 package dev.chasem.cobblemonextras.fabric.events
 
 import com.cobblemon.mod.common.CobblemonItems
+import com.cobblemon.mod.common.client.net.battle.BattleEndHandler
 import dev.chasem.cobblemonextras.events.UseProgramOnPC
 import dev.chasem.cobblemonextras.fabric.item.Programs
 import net.fabricmc.fabric.api.event.player.UseBlockCallback

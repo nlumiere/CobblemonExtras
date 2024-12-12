@@ -19,7 +19,7 @@ class PokeMount {
                 }
             }
 
-            if (!isPokemonInParty || pokemon.friendship < 255) {
+            if (!isPokemonInParty /*|| pokemon.friendship < 255*/) {
                 return ActionResult.PASS
             }
 
