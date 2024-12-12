@@ -54,7 +54,7 @@ class BattleRegistryListener {
                 val player = server.playerManager.getPlayer(it.key) ?: return
 
                 battle?.showdownMessages?.forEach { m ->
-                    if (m.contains("end")) {
+                    if (m.startsWith("end")) {
                         val parsed = m.substringAfter("\"winner\":\"")
                         val uid = parsed.substringBefore("\"")
                         val parsed2 = parsed.substringAfter("p1\":\"")
