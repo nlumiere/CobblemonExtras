@@ -1,10 +1,13 @@
 package dev.chasem.cobblemonextras.fabric.listeners
 
+import com.cobblemon.mod.common.CobblemonItems
 import com.cobblemon.mod.common.battles.BattleRegistry
+import com.cobblemon.mod.common.item.group.CobblemonItemGroups
 import com.cobblemon.mod.common.platform.events.PlatformEvents
 import net.minecraft.entity.passive.VillagerEntity
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.Item
+import net.minecraft.item.ItemGroups
 import net.minecraft.item.ItemStack
 import net.minecraft.item.Items
 import net.minecraft.server.MinecraftServer
@@ -21,12 +24,113 @@ class BattleRegistryListener {
         fun initialize() {
             PlatformEvents.SERVER_TICK_POST.subscribe { tick(it.server) }
 
-            rewardMap[Items.IRON_INGOT] = HashSet()
-            rewardMap[Items.EMERALD] = HashSet()
-            rewardMap[Items.DIAMOND] = HashSet()
-            rewardMap[Items.NETHERITE_INGOT] = HashSet()
+            rewardMap[Items.IRON_INGOT] = hashSetOf(
+                CobblemonItems.POTION,
+                CobblemonItems.SUPER_POTION,
+                CobblemonItems.HYPER_POTION,
+                CobblemonItems.FULL_HEAL,
+                CobblemonItems.REVIVE,
+                CobblemonItems.CALCIUM,
+                CobblemonItems.CARBOS,
+                CobblemonItems.PROTEIN,
+                CobblemonItems.HP_UP,
+                CobblemonItems.ZINC,
+                CobblemonItems.IRON,
+                CobblemonItems.PP_UP,
+                CobblemonItems.STICKY_BARB,
+                CobblemonItems.POKE_BALL,
+                CobblemonItems.GREAT_BALL
+            )
 
-//            rewardMap[Items.IRON_INGOT].
+            rewardMap[Items.EMERALD] = hashSetOf(
+                CobblemonItems.MAX_POTION,
+                CobblemonItems.FULL_RESTORE,
+                CobblemonItems.MAX_REVIVE,
+                CobblemonItems.PP_MAX,
+                CobblemonItems.RARE_CANDY,
+                CobblemonItems.ADAMANT_MINT,
+                CobblemonItems.JOLLY_MINT,
+                CobblemonItems.MILD_MINT,
+                CobblemonItems.TIMID_MINT,
+                CobblemonItems.IMPISH_MINT,
+                CobblemonItems.ARMOR_FOSSIL,
+                CobblemonItems.CLAW_FOSSIL,
+                CobblemonItems.DOME_FOSSIL,
+                CobblemonItems.COVER_FOSSIL,
+                CobblemonItems.HELIX_FOSSIL,
+                CobblemonItems.JAW_FOSSIL,
+                CobblemonItems.SKY_TUMBLESTONE,
+                CobblemonItems.RELIC_COIN,
+                CobblemonItems.LINK_CABLE,
+                CobblemonItems.METAL_COAT,
+                CobblemonItems.RAZOR_CLAW,
+                CobblemonItems.RAZOR_FANG,
+                CobblemonItems.DEEP_SEA_SCALE,
+                CobblemonItems.DEEP_SEA_TOOTH,
+                CobblemonItems.ABSORB_BULB,
+                CobblemonItems.PROTECTOR,
+                CobblemonItems.BIG_ROOT,
+                CobblemonItems.BLACK_SLUDGE,
+                CobblemonItems.CHOICE_BAND,
+                CobblemonItems.CHOICE_SPECS,
+                CobblemonItems.EVERSTONE,
+                CobblemonItems.GHOST_GEM,
+                CobblemonItems.GRASS_GEM,
+                CobblemonItems.GROUND_GEM,
+                CobblemonItems.BUG_GEM,
+                CobblemonItems.DARK_GEM,
+                CobblemonItems.DRAGON_GEM,
+                CobblemonItems.ELECTRIC_GEM,
+                CobblemonItems.FAIRY_GEM,
+                CobblemonItems.FIGHTING_GEM,
+                CobblemonItems.FIRE_GEM,
+                CobblemonItems.FLYING_GEM,
+                CobblemonItems.ICE_GEM,
+                CobblemonItems.NORMAL_GEM,
+                CobblemonItems.POISON_GEM,
+                CobblemonItems.WATER_GEM,
+                CobblemonItems.ROCK_GEM,
+                CobblemonItems.STEEL_GEM,
+                CobblemonItems.PSYCHIC_GEM,
+                CobblemonItems.ULTRA_BALL,
+                CobblemonItems.DUSK_BALL,
+                CobblemonItems.TIMER_BALL
+            )
+
+            rewardMap[Items.DIAMOND] = hashSetOf(
+                CobblemonItems.OVAL_STONE,
+                CobblemonItems.DRAGON_SCALE,
+                CobblemonItems.DUBIOUS_DISC,
+                CobblemonItems.PRISM_SCALE,
+                CobblemonItems.AUSPICIOUS_ARMOR,
+                CobblemonItems.MALICIOUS_ARMOR,
+                CobblemonItems.RELIC_COIN_POUCH,
+                CobblemonItems.ABILITY_SHIELD,
+                CobblemonItems.CHOICE_SCARF,
+                CobblemonItems.EVIOLITE,
+                CobblemonItems.LIFE_ORB,
+                CobblemonItems.LEFTOVERS,
+                CobblemonItems.EXP_SHARE,
+                CobblemonItems.LUCKY_EGG,
+                CobblemonItems.SHELL_BELL,
+                CobblemonItems.ABILITY_PATCH,
+                CobblemonItems.ABILITY_CAPSULE,
+                CobblemonItems.FAIRY_FEATHER,
+                Items.NAUTILUS_SHELL,
+                Items.PRISMARINE_SHARD,
+                Items.PRISMARINE_CRYSTALS,
+                Items.SHULKER_SHELL,
+                Items.TRIDENT,
+                Items.ECHO_SHARD
+            )
+
+            rewardMap[Items.NETHERITE_INGOT] = hashSetOf(
+                Items.NETHER_STAR,
+                CobblemonItems.MASTER_BALL,
+                Items.ENCHANTED_GOLDEN_APPLE,
+                Items.TOTEM_OF_UNDYING,
+                Items.HEART_OF_THE_SEA
+            )
         }
 
         fun put(player: PlayerEntity, npc: VillagerEntity, item: Item) {
@@ -63,8 +167,10 @@ class BattleRegistryListener {
                             val item = it.value?.second
                             if (item != null) {
                                 removeIfExists(it.key)
-                                player.giveItemStack(ItemStack(item, 2))
-                                player.sendMessage(Text.literal("Congratulations! You have won 2 " + item.toString() + "s!"))
+                                player.giveItemStack(ItemStack(item, 1))
+                                val randomItem = rewardMap[item]!!.random()
+                                player.giveItemStack(ItemStack(randomItem, 1))
+                                battle.broadcastChatMessage(Text.literal("You have been awarded your ${item.name} as well as a ${randomItem.name}!"))
                             }
                         }
                     }
