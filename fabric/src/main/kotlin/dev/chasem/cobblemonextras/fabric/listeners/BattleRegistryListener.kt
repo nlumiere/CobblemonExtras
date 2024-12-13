@@ -18,6 +18,7 @@ import java.util.UUID
 class BattleRegistryListener {
     companion object {
         private val playerNPCBattleMap = HashMap<UUID, Pair<UUID, Item>?>()
+        private val villagerLockoutMap = HashMap<UUID, Int>()
         private var tickCount = 0
         private val rewardMap = HashMap<Item, HashSet<Item>>()
 
@@ -135,6 +136,7 @@ class BattleRegistryListener {
 
         fun put(player: PlayerEntity, npc: VillagerEntity, item: Item) {
             playerNPCBattleMap[player.uuid] = Pair(npc.uuid, item)
+            villagerLockoutMap[npc.uuid] = 600*20
         }
 
         private fun removeIfExists(uuid: UUID) {
@@ -143,13 +145,28 @@ class BattleRegistryListener {
             }
         }
 
+        fun timeBeforeVillagerCanBattle(uuid: UUID): Int {
+            if (!villagerLockoutMap.containsKey(uuid)) {
+                return 0
+            }
+
+            return villagerLockoutMap[uuid]!!/20
+        }
+
         private fun tick(server: MinecraftServer) {
             tickCount++
-            if (tickCount % 30 != 0) {
+            if (tickCount % 40 != 0) {
                 return
             }
             else {
                 tickCount = 0
+            }
+
+            villagerLockoutMap.forEach { it ->
+                if (it.value > 0) {
+                    val newVal = (it.value - 40).coerceAtLeast(0)
+                    villagerLockoutMap[it.key] = newVal
+                }
             }
 
             // Nightmare

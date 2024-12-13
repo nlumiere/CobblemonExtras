@@ -5,6 +5,7 @@ import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
 import dev.chasem.cobblemonextras.events.PokeMount
 import dev.chasem.cobblemonextras.events.VillagerBattle
 import dev.chasem.cobblemonextras.fabric.listeners.BattleRegistryListener
+import dev.chasem.cobblemonextras.fabric.listeners.BattleRegistryListener.Companion.timeBeforeVillagerCanBattle
 import net.fabricmc.fabric.api.event.player.UseEntityCallback
 import net.minecraft.entity.Entity
 import net.minecraft.entity.passive.VillagerEntity
@@ -13,6 +14,7 @@ import net.minecraft.item.Items
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.text.Text
 import net.minecraft.util.ActionResult
+import net.minecraft.util.Formatting
 import net.minecraft.util.Hand
 import net.minecraft.util.hit.EntityHitResult
 import net.minecraft.village.VillagerProfession
@@ -67,6 +69,12 @@ class UseEntityHandler : UseEntityCallback{
 
             // If villager is unemployed, they must be a pokemon trainer. I don't make the rules.
             if (villagerEntity.villagerData.profession == VillagerProfession.NONE && partyOut) {
+                val timeLeft = timeBeforeVillagerCanBattle(villagerEntity.uuid)
+                if (timeLeft > 0) {
+                    player.sendMessage(Text.literal("You must wait another $timeLeft seconds before battling with this villager again.").formatted(Formatting.RED))
+                    return ActionResult.PASS
+                }
+
                 // Start trainer battle against villager
                 val heldItemStack = player.getStackInHand(hand)
                 val heldItem = heldItemStack.item
