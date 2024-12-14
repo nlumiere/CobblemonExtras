@@ -2,8 +2,10 @@ package dev.chasem.cobblemonextras.fabric.events
 
 import com.cobblemon.mod.common.Cobblemon
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
+import com.cobblemon.mod.common.util.party
 import dev.chasem.cobblemonextras.events.PokeMount
 import dev.chasem.cobblemonextras.events.VillagerBattle
+import dev.chasem.cobblemonextras.events.VillagerBattle.BattleLevel
 import dev.chasem.cobblemonextras.fabric.listeners.BattleRegistryListener
 import dev.chasem.cobblemonextras.fabric.listeners.BattleRegistryListener.Companion.timeBeforeVillagerCanBattle
 import net.fabricmc.fabric.api.event.player.UseEntityCallback
@@ -101,6 +103,14 @@ class UseEntityHandler : UseEntityCallback{
 
                 if (villagerEntity.villagerData.profession == VillagerProfession.NITWIT && (battleLevel == VillagerBattle.BattleLevel.DIFFICULT || battleLevel == VillagerBattle.BattleLevel.EXTREME)) {
                     player.sendMessage(Text.literal("This villager is a nitwit. Nitwits can only battle in Easy or Medium level battles. Try offering iron or emeralds.").formatted(Formatting.RED))
+                    return ActionResult.PASS
+                }
+
+                val playerAceLevel = (player as ServerPlayerEntity).party().maxOf { it -> it.level }
+
+                if (playerAceLevel < 40 && battleLevel == BattleLevel.DIFFICULT) {
+                    player.sendMessage(Text.literal("Difficult battles unlocked at level 40.").formatted(Formatting.RED))
+                    return ActionResult.PASS
                 }
 
                 heldItemStack.decrement(1)

@@ -48,13 +48,13 @@ class VillagerBattle {
                     pkmn.currentHealth = 0
                 }
                 if (battleLevel == BattleLevel.EASY) {
-                    pkmn.level = 1.coerceAtLeast(Random.nextInt(playerAceLevel - 10, playerAceLevel - 5))
+                    pkmn.level = 1.coerceAtLeast(Random.nextInt(playerAceLevel - 8, playerAceLevel - 3))
                 }
                 else if (battleLevel == BattleLevel.MEDIUM) {
-                    pkmn.level = 1.coerceAtLeast(Random.nextInt(playerAceLevel - 5, playerAceLevel - 1))
+                    pkmn.level = 1.coerceAtLeast(Random.nextInt(playerAceLevel - 2, playerAceLevel))
                 }
                 else if (battleLevel == BattleLevel.DIFFICULT) {
-                    pkmn.level = 100.coerceAtMost(Random.nextInt(playerAceLevel, playerAceLevel + 2))
+                    pkmn.level = 100.coerceAtMost(Random.nextInt(playerAceLevel, playerAceLevel + 4))
                 }
                 else if (battleLevel == BattleLevel.EXTREME){
                     pkmn.level = 100
