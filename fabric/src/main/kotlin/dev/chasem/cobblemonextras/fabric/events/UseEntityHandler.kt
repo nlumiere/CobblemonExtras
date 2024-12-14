@@ -18,6 +18,7 @@ import net.minecraft.util.Formatting
 import net.minecraft.util.Hand
 import net.minecraft.util.hit.EntityHitResult
 import net.minecraft.village.VillagerProfession
+import net.minecraft.village.VillagerType
 import net.minecraft.world.World
 
 class UseEntityHandler : UseEntityCallback{
@@ -67,28 +68,39 @@ class UseEntityHandler : UseEntityCallback{
                 }
             }
 
+            // Start trainer battle against villager
+            val heldItemStack = player.getStackInHand(hand)
+            val heldItem = heldItemStack.item
+            var battleLevel = VillagerBattle.BattleLevel.EASY
+            if (heldItem == Items.IRON_INGOT) {
+            } else if (heldItem == Items.EMERALD) {
+                battleLevel = VillagerBattle.BattleLevel.MEDIUM
+            } else if (heldItem == Items.DIAMOND) {
+                battleLevel = VillagerBattle.BattleLevel.DIFFICULT
+            } else if (heldItem == Items.NETHERITE_INGOT) {
+                battleLevel = VillagerBattle.BattleLevel.EXTREME
+            } else if (partyOut){
+                player.sendMessage(Text.literal("This villager can battle, but only will if there's a wager.\nEasy: Iron Ingot\nMedium: Emerald\nHard: Diamond\nExtreme: Netherite Ingot"))
+                return ActionResult.PASS
+            } else {
+                return ActionResult.PASS
+            }
+
+            if (!partyOut) {
+                player.sendMessage(Text.literal("This villager will battle you. Send out a Pokemon and try your wager again."))
+                return ActionResult.PASS
+            }
+
             // If villager is unemployed, they must be a pokemon trainer. I don't make the rules.
-            if (villagerEntity.villagerData.profession == VillagerProfession.NONE && partyOut) {
+            if (villagerEntity.villagerData.profession == VillagerProfession.NONE || villagerEntity.villagerData.profession == null || villagerEntity.villagerData.profession == VillagerProfession.NITWIT) {
                 val timeLeft = timeBeforeVillagerCanBattle(villagerEntity.uuid)
                 if (timeLeft > 0) {
                     player.sendMessage(Text.literal("You must wait another $timeLeft seconds before battling with this villager again.").formatted(Formatting.RED))
                     return ActionResult.PASS
                 }
 
-                // Start trainer battle against villager
-                val heldItemStack = player.getStackInHand(hand)
-                val heldItem = heldItemStack.item
-                var battleLevel = VillagerBattle.BattleLevel.EASY
-                if (heldItem == Items.IRON_INGOT) {
-                } else if (heldItem == Items.EMERALD) {
-                    battleLevel = VillagerBattle.BattleLevel.MEDIUM
-                } else if (heldItem == Items.DIAMOND) {
-                    battleLevel = VillagerBattle.BattleLevel.DIFFICULT
-                } else if (heldItem == Items.NETHERITE_INGOT) {
-                    battleLevel = VillagerBattle.BattleLevel.EXTREME
-                } else {
-                    player.sendMessage(Text.literal("This villager can battle, but only will if there's a wager.\nEasy: Iron Ingot\nMedium: Emerald\nHard: Diamond\nExtreme: Netherite Ingot"))
-                    return ActionResult.PASS
+                if (villagerEntity.villagerData.profession == VillagerProfession.NITWIT && (battleLevel == VillagerBattle.BattleLevel.DIFFICULT || battleLevel == VillagerBattle.BattleLevel.EXTREME)) {
+                    player.sendMessage(Text.literal("This villager is a nitwit. Nitwits can only battle in Easy or Medium level battles. Try offering iron or emeralds.").formatted(Formatting.RED))
                 }
 
                 heldItemStack.decrement(1)
