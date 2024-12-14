@@ -1,6 +1,7 @@
 package dev.chasem.cobblemonextras.events
 
 import com.cobblemon.mod.common.Cobblemon
+import com.cobblemon.mod.common.api.pokemon.feature.SpeciesFeatures
 import com.cobblemon.mod.common.battles.*
 import com.cobblemon.mod.common.battles.BattleRegistry.getBattleByParticipatingPlayer
 import com.cobblemon.mod.common.battles.actor.PlayerBattleActor
@@ -9,6 +10,8 @@ import com.cobblemon.mod.common.battles.ai.RandomBattleAI
 import com.cobblemon.mod.common.battles.ai.StrongBattleAI
 import com.cobblemon.mod.common.battles.pokemon.BattlePokemon
 import com.cobblemon.mod.common.pokemon.Pokemon
+import com.cobblemon.mod.common.pokemon.Species
+import com.cobblemon.mod.common.pokemon.evolution.requirements.LevelRequirement
 import com.cobblemon.mod.common.util.party
 import dev.chasem.cobblemonextras.ai.NaiveAI
 import net.minecraft.entity.passive.VillagerEntity
@@ -39,7 +42,7 @@ class VillagerBattle {
 
             var skill = 5
             val npcParty = List<BattlePokemon>(6) {
-                val pkmn = Pokemon()
+                var pkmn = Pokemon()
                 // Only kids can have legies
                 if (!villagerEntity.isBaby && (pkmn.isLegendary() || pkmn.isMythical()) && battleLevel != BattleLevel.EXTREME) {
                     pkmn.currentHealth = 0
@@ -57,8 +60,34 @@ class VillagerBattle {
                     pkmn.level = 100
                 }
 
+                pkmn = pkmn.initialize()
+                val preEvolution = pkmn.preEvolution
+                if (preEvolution != null && (battleLevel == BattleLevel.EASY || battleLevel == BattleLevel.MEDIUM)) {
+                    val newPokemon = Pokemon()
+                    newPokemon.level = pkmn.level
+                    newPokemon.species = preEvolution.species
+                    pkmn = newPokemon.initialize()
+                }
 
-                BattlePokemon.safeCopyOf(pkmn.initialize())
+                var evolutions = pkmn.evolutions
+                var shouldStopNow = battleLevel == BattleLevel.EASY
+                while (evolutions.toList().isNotEmpty() && !shouldStopNow) {
+                    var meetsRequirements = true
+                    evolutions.first().requirements.forEach {
+                        if (it is LevelRequirement && !it.check(pkmn)) {
+                            meetsRequirements = false
+                        }
+                    }
+                    if (!meetsRequirements) {
+                        break
+                    }
+
+                    pkmn.evolutions.first().evolutionMethod(pkmn)
+                    evolutions = pkmn.evolutions
+                    shouldStopNow = battleLevel == BattleLevel.MEDIUM
+                }
+
+                BattlePokemon.safeCopyOf(pkmn)
             }
 
             val npcActor = TrainerBattleActor("Villager", villagerEntity.uuid, npcParty, StrongBattleAI(skill))
