@@ -17,7 +17,9 @@
     "main": [
       "dev.chasem.cobblemonextras.fabric.CobblemonFabric"
     ],
-    "client": []
+    "client": [
+      "dev.chasem.cobblemonextras.fabric.listeners.PokeMountMovementListener"
+    ]
   },
   "mixins": [
   ],

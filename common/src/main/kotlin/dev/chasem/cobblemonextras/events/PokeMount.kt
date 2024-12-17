@@ -6,6 +6,7 @@ import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.text.Text
 import net.minecraft.util.ActionResult
 import net.minecraft.util.Hand
+import java.util.UUID
 
 class PokeMount {
     companion object {
@@ -19,30 +20,30 @@ class PokeMount {
                 }
             }
 
-            if (!isPokemonInParty /*|| pokemon.friendship < 255*/) {
+            if (!isPokemonInParty || pokemon.evolutions.toList().isNotEmpty() || pokemon.friendship < 100) {
+                if (pokemon.evolutions.toList().isNotEmpty()) {
+                    player.sendMessage(Text.literal("Pokemon must be fully evolved to ride."))
+                }
+
+                if (pokemon.friendship < 100) {
+                    player.sendMessage(Text.literal("Your Pokemon doesn't like you enough to ride"))
+                }
                 return ActionResult.PASS
-            }
-
-            var fWater = false
-            var fGround = false
-            var fAir = false
-            pokemon.moveSet.getMoves().forEach {
-                if (it.name == "strength") {
-                    fGround = true
-                }
-
-                if (it.name == "surf") {
-                    fWater = true
-                }
-
-                if (it.name == "fly") {
-                    fAir = true
-                }
             }
 
             player.startRiding(pokemonEntity)
 
             return ActionResult.PASS
+        }
+
+        fun logisticMapping(input: Double, minInput: Double = 0.0, maxInput: Double = 400.0, minOutput: Double = 0.0, maxOutput: Double = 2.0): Double {
+            input.coerceAtLeast(0.0).coerceAtMost(maxInput)
+            val k = 0.03
+            val midpoint = (maxInput - minInput) / 2.0
+
+            val logisticValue = 1 / (1 + Math.exp(-k * (input - midpoint)))
+
+            return minOutput + (maxOutput - minOutput) * logisticValue
         }
     }
 }
