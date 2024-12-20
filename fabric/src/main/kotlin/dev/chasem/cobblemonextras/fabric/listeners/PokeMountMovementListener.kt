@@ -35,12 +35,12 @@ class PokeMountMovementListener : ClientModInitializer {
         val water = pokemonEntity.pokemon.types.contains(ElementalTypes.WATER)
 
         val jumpKey = client.options.jumpKey.isPressed
-        val onGroundMoveValid = pokemonEntity.isOnGround || flying || (water && pokemonEntity.isSubmergedInWater)
-        if (jumpKey && onGroundMoveValid) {
+        val isJumpValid = pokemonEntity.isOnGround || flying || (water && pokemonEntity.isTouchingWater)
+        if (jumpKey && isJumpValid) {
             JumpPacket.sendToServer()
         }
 
-        if (client.options.forwardKey.isPressed && onGroundMoveValid) {
+        if (client.options.forwardKey.isPressed) {
             PokeMountMovePacket.sendToServer()
         }
     }

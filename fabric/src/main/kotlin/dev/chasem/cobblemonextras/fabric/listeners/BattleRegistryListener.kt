@@ -174,7 +174,12 @@ class BattleRegistryListener {
                 val battle = BattleRegistry.getBattleByParticipatingPlayerId(it.key)
                 val player = server.playerManager.getPlayer(it.key) ?: return
 
-                battle?.showdownMessages?.forEach { m ->
+                if (battle == null) {
+                    removeIfExists(it.key)
+                    return
+                }
+
+                battle.showdownMessages.forEach { m ->
                     if (m.startsWith("end")) {
                         val parsed = m.substringAfter("\"winner\":\"")
                         val uid = parsed.substringBefore("\"")

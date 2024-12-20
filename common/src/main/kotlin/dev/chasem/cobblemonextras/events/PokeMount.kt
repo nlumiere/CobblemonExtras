@@ -1,12 +1,12 @@
 package dev.chasem.cobblemonextras.events
 
 import com.cobblemon.mod.common.Cobblemon.storage
+import com.cobblemon.mod.common.api.pokemon.stats.Stats
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.text.Text
 import net.minecraft.util.ActionResult
 import net.minecraft.util.Hand
-import java.util.UUID
 
 class PokeMount {
     companion object {
@@ -44,6 +44,29 @@ class PokeMount {
             val logisticValue = 1 / (1 + Math.exp(-k * (input - midpoint)))
 
             return minOutput + (maxOutput - minOutput) * logisticValue
+        }
+
+        fun getSpeedMultiplier(pokemonEntity: PokemonEntity): Double {
+            val pokemon = pokemonEntity.pokemon
+            val levelMult = logisticMapping(pokemon.level.toDouble(), 1.0, 100.0, .8, 1.3)
+            val evsMult = pokemon.evs[Stats.SPEED]?.let { logisticMapping(it.toDouble(), 0.0, 252.0, .8, 1.3) } ?: 0.8
+            val ivsMult = pokemon.ivs[Stats.SPEED]?.let { logisticMapping(it.toDouble(), 0.0, 31.0, .9, 1.2) } ?: 0.9
+            val baseStatsMult =
+                pokemon.form.baseStats[Stats.SPEED]?.let { logisticMapping(it.toDouble(), 30.0, 150.0, .6, 1.8) } ?: .6
+            val natureMult = if (pokemon.nature.increasedStat == Stats.SPEED) 1.1 else 1.0
+
+            return levelMult * evsMult * ivsMult * baseStatsMult * natureMult
+        }
+
+        fun getStrengthMultiplier(pokemonEntity: PokemonEntity): Double {
+            val pokemon = pokemonEntity.pokemon
+            val levelMult = logisticMapping(pokemon.level.toDouble(), 1.0, 100.0, .8, 1.3)
+            val evsMult = pokemon.evs[Stats.HP]?.let { logisticMapping(it.toDouble(), 0.0, 252.0, .8, 1.3) } ?: 0.8
+            val ivsMult = pokemon.ivs[Stats.HP]?.let { logisticMapping(it.toDouble(), 0.0, 31.0, .9, 1.2) } ?: 0.9
+            val baseStatsMult =
+                pokemon.form.baseStats[Stats.HP]?.let { logisticMapping(it.toDouble(), 30.0, 150.0, .6, 1.8) } ?: .6
+
+            return levelMult * evsMult * ivsMult * baseStatsMult
         }
     }
 }

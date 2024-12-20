@@ -47,7 +47,8 @@ object PokeMountMovePacket {
             vector3 = vector3.normalize()
             val yVelocity = pokemonEntity.velocity.y
             val existingVelocity = Vec3d(pokemonEntity.velocity.x, 0.0, pokemonEntity.velocity.z)
-            val newVelocity = (existingVelocity.add(vector3)).normalize().multiply(.3)
+            val velocityStatMultiplier = PokeMount.getSpeedMultiplier(pokemonEntity)
+            val newVelocity = (existingVelocity.add(vector3)).normalize().multiply(.4).multiply(velocityStatMultiplier)
             pokemonEntity.setVelocity(newVelocity.x, yVelocity, newVelocity.z)
         }
         catch (e: Exception) {}

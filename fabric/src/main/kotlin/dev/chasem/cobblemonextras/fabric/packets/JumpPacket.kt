@@ -34,9 +34,10 @@ object JumpPacket {
             val pokemonEntity = entity as PokemonEntity
             val flying = pokemonEntity.pokemon.types.contains(ElementalTypes.FLYING)
             val water = pokemonEntity.pokemon.types.contains(ElementalTypes.WATER)
-            if (entity.isOnGround || flying || (water && entity.isSubmergedInWater)) {
+            if (entity.isOnGround || flying || (water && entity.isTouchingWater)) {
                 val existingVelocity = entity.velocity
-                entity.setVelocity(existingVelocity.x, .5, existingVelocity.z)
+                val jumpVelocity = .5*PokeMount.getStrengthMultiplier(pokemonEntity)
+                entity.setVelocity(existingVelocity.x, jumpVelocity, existingVelocity.z)
             }
         }
         catch (e: Exception) {}
