@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {"item": "cobblemon:brave_mint"}
+  ],
+  "result": {
+    "item": "cobblemonextras:red_mint_seeds",
+    "count": 1
+  }
+}

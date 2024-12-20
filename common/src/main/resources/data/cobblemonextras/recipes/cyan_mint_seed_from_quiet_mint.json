@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {"item": "cobblemon:quiet_mint"}
+  ],
+  "result": {
+    "item": "cobblemonextras:cyan_mint_seeds",
+    "count": 1
+  }
+}

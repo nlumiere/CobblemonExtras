@@ -26,22 +26,20 @@ class PokeMountMovementListener : ClientModInitializer {
             return
         }
 
-        try {
-            player.vehicle as PokemonEntity
-        } catch (e: Exception) {}
+        if (player.vehicle is PokemonEntity) {
+            val pokemonEntity = player.vehicle as PokemonEntity
+            val flying = pokemonEntity.pokemon.types.contains(ElementalTypes.FLYING)
+            val water = pokemonEntity.pokemon.types.contains(ElementalTypes.WATER)
 
-        val pokemonEntity = player.vehicle as PokemonEntity
-        val flying = pokemonEntity.pokemon.types.contains(ElementalTypes.FLYING)
-        val water = pokemonEntity.pokemon.types.contains(ElementalTypes.WATER)
+            val jumpKey = client.options.jumpKey.isPressed
+            val isJumpValid = pokemonEntity.isOnGround || flying || (water && pokemonEntity.isTouchingWater)
+            if (jumpKey && isJumpValid) {
+                JumpPacket.sendToServer()
+            }
 
-        val jumpKey = client.options.jumpKey.isPressed
-        val isJumpValid = pokemonEntity.isOnGround || flying || (water && pokemonEntity.isTouchingWater)
-        if (jumpKey && isJumpValid) {
-            JumpPacket.sendToServer()
-        }
-
-        if (client.options.forwardKey.isPressed) {
-            PokeMountMovePacket.sendToServer()
+            if (client.options.forwardKey.isPressed) {
+                PokeMountMovePacket.sendToServer()
+            }
         }
     }
 }
