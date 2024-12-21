@@ -125,23 +125,30 @@ class BattleRegistryListener {
                 CobblemonItems.EXP_SHARE,
                 CobblemonItems.LUCKY_EGG,
                 CobblemonItems.SHELL_BELL,
-                CobblemonItems.ABILITY_PATCH,
-                CobblemonItems.ABILITY_CAPSULE,
                 CobblemonItems.FAIRY_FEATHER,
                 Items.NAUTILUS_SHELL,
                 Items.PRISMARINE_SHARD,
                 Items.PRISMARINE_CRYSTALS,
                 Items.SHULKER_SHELL,
                 Items.TRIDENT,
-                Items.ECHO_SHARD
+                Items.ECHO_SHARD,
+                Items.ENCHANTED_GOLDEN_APPLE,
             )
 
             rewardMap[Items.NETHERITE_INGOT] = hashSetOf(
+                Items.TOTEM_OF_UNDYING,
+                Items.HEART_OF_THE_SEA,
+                Items.NETHERITE_INGOT,
+                Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE,
+                Items.ELYTRA,
+                CobblemonItems.ABILITY_PATCH,
+                CobblemonItems.ABILITY_CAPSULE,
+            )
+
+            rewardMap[Items.NETHERITE_BLOCK] = hashSetOf(
                 Items.NETHER_STAR,
                 CobblemonItems.MASTER_BALL,
-                Items.ENCHANTED_GOLDEN_APPLE,
-                Items.TOTEM_OF_UNDYING,
-                Items.HEART_OF_THE_SEA
+                Items.DRAGON_EGG
             )
         }
 

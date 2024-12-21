@@ -2,6 +2,7 @@ package dev.chasem.cobblemonextras.events
 
 import com.cobblemon.mod.common.Cobblemon
 import com.cobblemon.mod.common.CobblemonItems
+import com.cobblemon.mod.common.api.moves.MoveTemplate
 import com.cobblemon.mod.common.api.pokemon.feature.SpeciesFeatures
 import com.cobblemon.mod.common.api.pokemon.stats.Stats
 import com.cobblemon.mod.common.battles.*
@@ -30,7 +31,8 @@ class VillagerBattle {
         EASY,
         MEDIUM,
         DIFFICULT,
-        EXTREME
+        EXTREME,
+        UNFAIR
     }
 
     companion object {
@@ -39,8 +41,17 @@ class VillagerBattle {
                 return ActionResult.PASS
             }
 
-            val party = Cobblemon.storage.getParty(player.uuid)
-            val playerTeam = party.toBattleTeam()
+            val playerTeam = Cobblemon.storage.getParty(player.uuid).map {
+                val tempPokemon = it.clone()
+                if (battleLevel == BattleLevel.UNFAIR) {
+                    tempPokemon.level = (it.level - 10).coerceAtLeast(1)
+                }
+                tempPokemon.initialize()
+                tempPokemon.heal()
+
+                BattlePokemon.safeCopyOf(it)
+            }
+
             val playerActor = PlayerBattleActor(player.uuid, playerTeam)
 
             val playerAceLevel = player.party().maxOf { it -> it.level }
@@ -61,7 +72,7 @@ class VillagerBattle {
                 else if (battleLevel == BattleLevel.DIFFICULT) {
                     pkmn.level = 95.coerceAtMost(Random.nextInt(playerAceLevel, playerAceLevel + 4))
                 }
-                else if (battleLevel == BattleLevel.EXTREME){
+                else {
                     pkmn.level = 100
                 }
 
@@ -92,7 +103,7 @@ class VillagerBattle {
                     shouldStopNow = battleLevel == BattleLevel.MEDIUM
                 }
 
-                if (battleLevel == BattleLevel.DIFFICULT || battleLevel == BattleLevel.EXTREME) {
+                if (battleLevel == BattleLevel.DIFFICULT || battleLevel == BattleLevel.EXTREME || battleLevel == BattleLevel.UNFAIR) {
                     val stats = intArrayOf(
                         pkmn.hp,
                         pkmn.attack,
@@ -125,7 +136,15 @@ class VillagerBattle {
                         pkmn.swapHeldItem(ItemStack(CobblemonItems.SITRUS_BERRY))
                     }
 
-                    Optimization.optimizeEVs(pkmn)
+                    if (battleLevel == BattleLevel.UNFAIR) {
+                        val allStats = arrayOf(Stats.HP, Stats.ATTACK, Stats.DEFENCE, Stats.SPECIAL_DEFENCE, Stats.SPECIAL_ATTACK, Stats.SPEED)
+                        allStats.forEach {
+                            pkmn.setEV(it, 252)
+                        }
+                    }
+                    else {
+                        Optimization.optimizeEVs(pkmn)
+                    }
                 }
 
                 if (battleLevel == BattleLevel.EXTREME) {

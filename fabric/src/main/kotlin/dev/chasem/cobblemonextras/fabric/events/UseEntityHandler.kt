@@ -75,23 +75,7 @@ class UseEntityHandler : UseEntityCallback{
                 }
             }
 
-            // Start trainer battle against villager
-            val heldItemStack = player.getStackInHand(hand)
-            val heldItem = heldItemStack.item
-            var battleLevel = VillagerBattle.BattleLevel.EASY
-            if (heldItem == Items.IRON_INGOT) {
-            } else if (heldItem == Items.EMERALD) {
-                battleLevel = VillagerBattle.BattleLevel.MEDIUM
-            } else if (heldItem == Items.DIAMOND) {
-                battleLevel = VillagerBattle.BattleLevel.DIFFICULT
-            } else if (heldItem == Items.NETHERITE_INGOT) {
-                battleLevel = VillagerBattle.BattleLevel.EXTREME
-            } else if (partyOut){
-                player.sendMessage(Text.literal("This villager can battle, but only will if there's a wager.\nEasy: Iron Ingot\nMedium: Emerald\nHard: Diamond\nExtreme: Netherite Ingot"))
-                return ActionResult.PASS
-            } else {
-                return ActionResult.PASS
-            }
+
 
             if (!partyOut) {
                 player.sendMessage(Text.literal("This villager will battle you. Send out a Pokemon and try your wager again."))
@@ -106,7 +90,25 @@ class UseEntityHandler : UseEntityCallback{
                     return ActionResult.PASS
                 }
 
-                if (villagerEntity.villagerData.profession == VillagerProfession.NITWIT && (battleLevel == VillagerBattle.BattleLevel.DIFFICULT || battleLevel == VillagerBattle.BattleLevel.EXTREME)) {
+                // Start trainer battle against villager
+                val heldItemStack = player.getStackInHand(hand)
+                val heldItem = heldItemStack.item
+                var battleLevel = VillagerBattle.BattleLevel.EASY
+                if (heldItem == Items.IRON_INGOT) {
+                } else if (heldItem == Items.EMERALD) {
+                    battleLevel = VillagerBattle.BattleLevel.MEDIUM
+                } else if (heldItem == Items.DIAMOND) {
+                    battleLevel = VillagerBattle.BattleLevel.DIFFICULT
+                } else if (heldItem == Items.NETHERITE_INGOT) {
+                    battleLevel = VillagerBattle.BattleLevel.EXTREME
+                } else if (heldItem == Items.NETHERITE_BLOCK) {
+                    battleLevel = VillagerBattle.BattleLevel.UNFAIR
+                } else if (partyOut){
+                    player.sendMessage(Text.literal("This villager can battle, but only will if there's a wager.\nEasy: Iron Ingot\nMedium: Emerald\nHard: Diamond\nExtreme: Netherite Ingot\nUnfair: Netherite Block"))
+                    return ActionResult.PASS
+                }
+
+                if (villagerEntity.villagerData.profession == VillagerProfession.NITWIT && (battleLevel == VillagerBattle.BattleLevel.DIFFICULT || battleLevel == VillagerBattle.BattleLevel.EXTREME || battleLevel == VillagerBattle.BattleLevel.UNFAIR)) {
                     player.sendMessage(Text.literal("This villager is a nitwit. Nitwits can only battle in Easy or Medium level battles. Try offering iron or emeralds.").formatted(Formatting.RED))
                     return ActionResult.PASS
                 }
