@@ -41,15 +41,14 @@ class VillagerBattle {
                 return ActionResult.PASS
             }
 
-            val playerTeam = Cobblemon.storage.getParty(player.uuid).map {
-                val tempPokemon = it.clone()
-                if (battleLevel == BattleLevel.UNFAIR) {
-                    tempPokemon.level = (it.level - 10).coerceAtLeast(1)
-                }
-                tempPokemon.initialize()
-                tempPokemon.heal()
-
-                BattlePokemon.safeCopyOf(it)
+            val playerTeam = Cobblemon.storage.getParty(player.uuid).map { originalPokemon ->
+                 BattlePokemon.safeCopyOf(originalPokemon.clone().apply {
+                    if (battleLevel == BattleLevel.UNFAIR) {
+                        level = (level - 10).coerceAtLeast(1)
+                    }
+                    initialize()
+                    heal()
+                })
             }
 
             val playerActor = PlayerBattleActor(player.uuid, playerTeam)
@@ -60,7 +59,7 @@ class VillagerBattle {
             val npcParty = List<BattlePokemon>(6) {
                 var pkmn = Pokemon()
                 // Only kids can have legies
-                if (!villagerEntity.isBaby && (pkmn.isLegendary() || pkmn.isMythical()) && battleLevel != BattleLevel.EXTREME) {
+                if (!villagerEntity.isBaby && (pkmn.isLegendary() || pkmn.isMythical()) && battleLevel != BattleLevel.EXTREME && battleLevel != BattleLevel.UNFAIR) {
                     pkmn.currentHealth = 0
                 }
                 if (battleLevel == BattleLevel.EASY) {
@@ -161,9 +160,7 @@ class VillagerBattle {
 //            val battleFormat = if (battleLevel == BattleLevel.EASY) BattleFormat.GEN_9_SINGLES else if (Random.nextInt() % 2 == 0) BattleFormat.GEN_9_SINGLES else BattleFormat.GEN_9_DOUBLES
             val battleFormat = BattleFormat.GEN_9_SINGLES
             var result = ActionResult.PASS
-            player.sendMessage(Text.literal("Trying to start battle"))
             BattleRegistry.startBattle(battleFormat, BattleSide(playerActor), BattleSide(npcActor)).ifSuccessful { it ->
-                player.sendMessage(Text.literal("Battle started successfully"))
                 SuccessfulBattleStart(it)
                 result = ActionResult.SUCCESS
             }
