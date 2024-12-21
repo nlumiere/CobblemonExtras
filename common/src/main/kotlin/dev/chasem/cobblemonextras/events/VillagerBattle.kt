@@ -46,8 +46,6 @@ class VillagerBattle {
                     if (battleLevel == BattleLevel.UNFAIR) {
                         level = (level - 10).coerceAtLeast(1)
                     }
-                    initialize()
-                    heal()
                 })
             }
 
