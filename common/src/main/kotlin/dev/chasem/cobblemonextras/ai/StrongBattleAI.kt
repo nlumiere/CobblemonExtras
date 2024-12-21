@@ -433,6 +433,42 @@ class StrongBattleAI(skill: Int) : BattleAI {
     // function for calculating the Damage of the move sent in
     fun calculateDamage(move: InBattleMove, mon: ActiveTracker.TrackerPokemon, opponent: ActiveTracker.TrackerPokemon, currentWeather: String?): Double {
         val moveData = Moves.getByName(move.id)
+
+        val typeMap = hashMapOf(
+            Pair("normal", ElementalTypes.NORMAL),
+            Pair("fire", ElementalTypes.FIRE),
+            Pair("water", ElementalTypes.WATER),
+            Pair("ground", ElementalTypes.GROUND),
+            Pair("grass", ElementalTypes.GRASS),
+            Pair("rock", ElementalTypes.ROCK),
+            Pair("dragon", ElementalTypes.DRAGON),
+            Pair("fighting", ElementalTypes.FIGHTING),
+            Pair("fairy", ElementalTypes.FAIRY),
+            Pair("poison", ElementalTypes.POISON),
+            Pair("bug", ElementalTypes.BUG),
+            Pair("psychic", ElementalTypes.PSYCHIC),
+            Pair("ghost", ElementalTypes.GHOST),
+            Pair("dark", ElementalTypes.DARK),
+            Pair("ice", ElementalTypes.ICE),
+            Pair("steel", ElementalTypes.STEEL),
+            Pair("flying", ElementalTypes.FLYING)
+        )
+
+        var mult = 1.0
+        opponent.currentTypes?.forEach {
+            if (moveData != null) {
+                val product = typeMap[it.lowercase()]?.let { it1 -> getDamageMultiplier(moveData.elementalType, it1) }
+                if (product == 0.0) {
+                    return 0.0
+                }
+                mult *= (product ?: .5)
+            }
+        }
+
+        if (mult == .25 && opponent.currentHp > 4) {
+            return 0.0
+        }
+
         /*var value = moveData!!.power
         value *= if (moveData.elementalType in mon.pokemon!!.types) 1.5 else 1.0 // STAB
         value *= if (moveData.damageCategory == DamageCategories.PHYSICAL) physicalRatio else specialRatio
@@ -1100,7 +1136,9 @@ class StrongBattleAI(skill: Int) : BattleAI {
 
             // Damage dealing moves
             val moveValues = mutableMapOf<InBattleMove, Double>()
-            for (move in moveset.moves.filter { !it.disabled }) {
+            for (move in moveset.moves.filter {
+                !it.disabled
+            }) {
                 val moveData = Moves.getByName(move.id)
                 /**//*var value = moveData!!.power
                 value *= if (moveData.elementalType in mon.pokemon!!.types) 1.5 else 1.0 // STAB
