@@ -41,13 +41,11 @@ class VillagerBattle {
                 return ActionResult.PASS
             }
 
-            val playerTeam = Cobblemon.storage.getParty(player.uuid).map { originalPokemon ->
-                 BattlePokemon.safeCopyOf(originalPokemon.clone().apply {
-                    if (battleLevel == BattleLevel.UNFAIR) {
-                        level = (level - 10).coerceAtLeast(1)
-                    }
+            val playerTeam = if (battleLevel == BattleLevel.UNFAIR) { Cobblemon.storage.getParty(player.uuid).map { originalPokemon ->
+                BattlePokemon.safeCopyOf(originalPokemon.clone().apply {
+                    level = (level - 10).coerceAtLeast(1)
                 })
-            }
+            }} else { Cobblemon.storage.getParty(player.uuid).toBattleTeam() }
 
             val playerActor = PlayerBattleActor(player.uuid, playerTeam)
 
