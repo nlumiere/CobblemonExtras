@@ -194,7 +194,7 @@ class BattleRegistryListener {
                                 player.giveItemStack(ItemStack(item, 1))
                                 val randomItem = rewardMap[item]!!.random()
                                 player.giveItemStack(ItemStack(randomItem, 1))
-                                battle.broadcastChatMessage(Text.literal("You have been awarded your ${item.name} as well as a ${randomItem.name}!"))
+                                player.sendMessage(Text.literal("You have been awarded your $item as well as a $randomItem!"))
                             }
                         }
                     }

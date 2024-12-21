@@ -63,6 +63,11 @@ class UseEntityHandler : UseEntityCallback{
         try {
             val party = Cobblemon.storage.getParty(player.uuid);
             val villagerEntity = entity as VillagerEntity
+
+            if (party.toList().isEmpty() || party.first().isFainted()) {
+                player.sendMessage(Text.literal("The first member of your party does not exist or is ineligible for battle. Please change your first party slot and try again.").formatted(Formatting.RED))
+            }
+
             var partyOut = false
             party.forEach { it ->
                 if (it.entity != null) {

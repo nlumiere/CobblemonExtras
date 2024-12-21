@@ -1,10 +1,11 @@
 {
   "type": "minecraft:crafting_shapeless",
+  "category": "building",
   "ingredients": [
     {"item": "cobblemon:sassy_mint"}
   ],
   "result": {
-    "item": "cobblemonextras:pink_mint_seeds",
+    "item": "cobblemon:pink_mint_seeds",
     "count": 1
   }
 }

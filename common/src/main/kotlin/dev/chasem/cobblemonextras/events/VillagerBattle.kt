@@ -132,6 +132,8 @@ class VillagerBattle {
                     Optimization.optimizeIVs(pkmn)
                 }
 
+                pkmn.heal()
+
                 BattlePokemon.safeCopyOf(pkmn)
             }
 
@@ -140,7 +142,9 @@ class VillagerBattle {
 //            val battleFormat = if (battleLevel == BattleLevel.EASY) BattleFormat.GEN_9_SINGLES else if (Random.nextInt() % 2 == 0) BattleFormat.GEN_9_SINGLES else BattleFormat.GEN_9_DOUBLES
             val battleFormat = BattleFormat.GEN_9_SINGLES
             var result = ActionResult.PASS
+            player.sendMessage(Text.literal("Trying to start battle"))
             BattleRegistry.startBattle(battleFormat, BattleSide(playerActor), BattleSide(npcActor)).ifSuccessful { it ->
+                player.sendMessage(Text.literal("Battle started successfully"))
                 SuccessfulBattleStart(it)
                 result = ActionResult.SUCCESS
             }
