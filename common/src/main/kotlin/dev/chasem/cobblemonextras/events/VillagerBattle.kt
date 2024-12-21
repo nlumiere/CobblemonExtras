@@ -41,11 +41,20 @@ class VillagerBattle {
                 return ActionResult.PASS
             }
 
-            val playerTeam = if (battleLevel == BattleLevel.UNFAIR) { Cobblemon.storage.getParty(player.uuid).map { originalPokemon ->
-                BattlePokemon.safeCopyOf(originalPokemon.clone().apply {
-                    level = (level - 10).coerceAtLeast(1)
-                })
-            }} else { Cobblemon.storage.getParty(player.uuid).toBattleTeam() }
+            val playerTeam = Cobblemon.storage.getParty(player.uuid).toBattleTeam(battleLevel == BattleLevel.UNFAIR)
+
+            playerTeam.forEach {
+                if (battleLevel == BattleLevel.UNFAIR) {
+                    it.effectedPokemon.apply {
+                        level -= 10
+                        swapHeldItem(ItemStack.EMPTY)
+                    }
+                }
+
+                it.effectedPokemon.apply {
+                    heal()
+                }
+            }
 
             val playerActor = PlayerBattleActor(player.uuid, playerTeam)
 
@@ -146,9 +155,13 @@ class VillagerBattle {
                     Optimization.optimizeIVs(pkmn)
                 }
 
-                pkmn.heal()
-
                 BattlePokemon.safeCopyOf(pkmn)
+            }
+
+            npcParty.forEach {
+                it.effectedPokemon.apply {
+                    heal()
+                }
             }
 
             val npcActor = TrainerBattleActor("Villager", villagerEntity.uuid, npcParty, StrongBattleAI(skill))

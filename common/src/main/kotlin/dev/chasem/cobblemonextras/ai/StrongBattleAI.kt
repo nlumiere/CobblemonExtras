@@ -1137,7 +1137,7 @@ class StrongBattleAI(skill: Int) : BattleAI {
             // Damage dealing moves
             val moveValues = mutableMapOf<InBattleMove, Double>()
             for (move in moveset.moves.filter {
-                !it.disabled
+                !it.disabled && it.id !in listOf("lastresort", "last_resort")
             }) {
                 val moveData = Moves.getByName(move.id)
                 /**//*var value = moveData!!.power
